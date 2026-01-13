@@ -56,7 +56,7 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 LOG_PATH = OUT_DIR / "predictions_log.csv"
 
-st.set_page_config(page_title="Tennis Predictions (TML + Elo v2)", layout="wide")
+st.set_page_config(page_title="PROVES TENNIS OSCAR", layout="wide")
 
 # ─── MIGRACIÓ D’ARXIUS ANTICS (outputs/ → data/outputs/) ──────────
 def load_artifacts(OUT_DIR: str):
