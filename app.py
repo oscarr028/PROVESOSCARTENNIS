@@ -1653,7 +1653,7 @@ def alt_market_hint(
 # -------------------------------
 # UI
 # -------------------------------
-st.title("🎾 Tennis Predictions — TML + Elo v2 (Odds API: diagnostics + fallback)")
+st.title("🎾 PROVES OSCAR TENNIS)")
 
 with st.sidebar:
     
