@@ -1653,7 +1653,7 @@ def alt_market_hint(
 # -------------------------------
 # UI
 # -------------------------------
-st.title("🎾 PROVES OSCAR TENNIS)")
+st.title("🎾 PROVES OSCAR TENNIS")
 
 with st.sidebar:
     
