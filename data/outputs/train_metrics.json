@@ -1,0 +1,21 @@
+{
+  "valid_logloss": 0.6155869532174457,
+  "valid_auc": 0.7143776393215645,
+  "valid_brier": 0.21495836772878646,
+  "test_logloss": 0.5988870561220478,
+  "test_auc": 0.7288372943567386,
+  "test_brier": 0.20859124266302684,
+  "n_train": 27242,
+  "n_valid": 3405,
+  "n_test": 3406,
+  "n_features": 27,
+  "timestamp": "2026-01-13 10:09:45Z",
+  "model_type": "LogisticRegression",
+  "hc_n_picks": 245504,
+  "hc_hit_rate": 0.7398738920750783,
+  "hc_cov_pct": 68.71031029686289,
+  "bt_n_bets": 0,
+  "bt_hit_rate": NaN,
+  "bt_avg_edge": NaN,
+  "bt_coverage_pct": 0.0
+}
