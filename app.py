@@ -4167,7 +4167,7 @@ with tab2:
                 st.warning("Explain not available: missing stored feature row (last_ds_fx). Run a prediction again.")
                 expl = {"ok": False, "error": "missing last_ds_fx"}
             else:
-                expl = explain_row_contributions(ds_fx_last, model, cal, feature_names, iso=iso, top_k=10)
+                expl = explain_row_contributions(ds_fx_last, model, feature_names, iso=iso, top_k=10)
 
             if expl.get("ok"):
                 st.caption(expl.get("note", ""))
