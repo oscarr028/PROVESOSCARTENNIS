@@ -4197,10 +4197,10 @@ with tab2:
                         st.dataframe(expl["top_neg"][["feature","value","contrib_logodds"]], use_container_width=True)
 
         
-                st.markdown(
-                    f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
-                    f"**Calibrated prob (displayed):** {expl['p_cal']*100:.1f}%"
-                )
+                    st.markdown(
+                        f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
+                        f"**Calibrated prob (displayed):** {expl['p_cal']*100:.1f}%"
+                    )
                 else:
                 st.warning(f"Explain not available: {expl.get('error','unknown error')}")
         except Exception as e:
