@@ -4174,7 +4174,16 @@ with tab2:
                 show_sym = st.toggle("Show symmetric A vs B table", value=True)
 
                 if show_sym:
-                    sym = build_symmetric_ab_table(expl["df"], top_k=12)
+                    expl_df = pd.concat(
+                        [
+                            expl["top_pos"].assign(side="A"),
+                            expl["top_neg"].assign(side="B"),
+                        ],
+                        ignore_index=True,
+                    )
+                    
+                    sym = build_symmetric_ab_table(expl_df, top_k=12)
+
                     st.markdown("**Symmetric factors (A vs B)**")
                     st.dataframe(sym, use_container_width=True)
                 else:
