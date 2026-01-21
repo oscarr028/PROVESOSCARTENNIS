@@ -4162,7 +4162,7 @@ with tab2:
         # En el teu flux manual, ds_fx existeix abans de _prep_X_for_model.
         
         try:
-            ds_fx_last = st.session_state.get("last_ds_fx")
+                ds_fx_last = st.session_state.get("last_ds_fx")
                 if ds_fx_last is None:
                     st.warning("Explain not available: missing stored feature row (last_ds_fx). Run a prediction again.")
                     expl = {"ok": False, "error": "missing last_ds_fx"}
