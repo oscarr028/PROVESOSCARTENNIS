@@ -4176,7 +4176,7 @@ with tab2:
                     else:
                         sym = build_symmetric_ab_table(expl_df=expl_df, top_k=12)
                         st.dataframe(sym, use_container_width=True, hide_index=True)
-
+        
                 if show_sym:
                     expl_df = pd.concat(
                         [
