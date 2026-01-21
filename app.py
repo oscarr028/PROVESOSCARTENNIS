@@ -3480,6 +3480,41 @@ with tab2:
             "full": dfc,
             "note": "Contribucions en log-odds del model base. La probabilitat mostrada pot ser calibrada (isotonic)."
         }
+    
+    def build_symmetric_ab_table(expl_df: pd.DataFrame, top_k: int = 12) -> pd.DataFrame:
+    """
+    Tabla simétrica A vs B:
+    - Para features tipo *_pre_diff (A - B), la contribución para B es el negativo de la de A.
+    - Para features de contexto (surface_hard, tourney_level_code, best_of_5, etc.),
+      no pertenecen a un jugador, así que ponemos contrib_B = contrib_A = 0 (context-only).
+    """
+    df = expl_df.copy()
+
+    # Detecta features "diferencia A-B" (las que realmente se pueden repartir entre jugadores)
+    is_diff = df["feature"].astype(str).str.contains("_pre_diff") | df["feature"].astype(str).str.endswith("_diff")
+
+    df["type"] = np.where(is_diff, "A-B diff", "context")
+
+    # Valores (si es diff, B es el negativo; si es contexto, igual)
+    df["value_A"] = df["value"]
+    df["value_B"] = np.where(is_diff, -df["value"], df["value"])
+
+    # Contribuciones: si es diff, B es el negativo; si es contexto, no lo asignamos a ningún jugador
+    df["contrib_A"] = df["contrib_logodds"]
+    df["contrib_B"] = np.where(is_diff, -df["contrib_logodds"], 0.0)
+    df["contrib_A_shown"] = np.where(is_diff, df["contrib_logodds"], 0.0)
+
+    df["abs_contrib"] = np.abs(df["contrib_A_shown"])
+
+    cols = ["feature", "type", "value_A", "value_B", "contrib_A_shown", "contrib_B", "abs_contrib"]
+    df = df[cols].sort_values("abs_contrib", ascending=False).head(top_k)
+
+    # Presentación (nombres más claros)
+    df = df.rename(columns={
+        "contrib_A_shown": "contrib_A",
+    }).drop(columns=["abs_contrib"])
+
+    return df
 
 
 
@@ -4135,7 +4170,7 @@ with tab2:
             )
             if expl.get("ok"):
                 st.caption(expl.get("note",""))
-        
+                """
                 c1, c2 = st.columns(2)
                 with c1:
                     st.markdown("**Top factors pushing Player A up**")
@@ -4143,7 +4178,22 @@ with tab2:
                 with c2:
                     st.markdown("**Top factors pushing Player A down**")
                     st.dataframe(expl["top_neg"][["feature","value","contrib_logodds"]], use_container_width=True)
-        
+                """
+                show_sym = st.toggle("Show symmetric A vs B table", value=True)
+
+if show_sym:
+    sym = build_symmetric_ab_table(expl["df"], top_k=12)
+    st.markdown("**Symmetric factors (A vs B)**")
+    st.dataframe(sym, use_container_width=True)
+else:
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Top factors pushing Player A up**")
+        st.dataframe(expl["top_pos"][["feature","value","contrib_logodds"]], use_container_width=True)
+    with c2:
+        st.markdown("**Top factors pushing Player A down**")
+        st.dataframe(expl["top_neg"][["feature","value","contrib_logodds"]], use_container_width=True)
+
                 st.markdown(
                     f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
                     f"**Calibrated prob (displayed):** {expl['p_cal']*100:.1f}%"
