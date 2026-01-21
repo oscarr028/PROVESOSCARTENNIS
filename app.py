@@ -1653,7 +1653,7 @@ def alt_market_hint(
 # -------------------------------
 # UI
 # -------------------------------
-st.title("🎾 Tennis AI Value Predictions — TML Database + Elo Score")
+st.title("🎾 PROVES OSCAR")
 
 with st.sidebar:
     
