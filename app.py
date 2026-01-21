@@ -4201,7 +4201,7 @@ with tab2:
                         f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
                         f"**Calibrated prob (displayed):** {expl['p_cal']*100:.1f}%"
                     )
-                else:
+                    else:
                 st.warning(f"Explain not available: {expl.get('error','unknown error')}")
         except Exception as e:
             st.warning(f"Explain error: {type(e).__name__}: {e}")
