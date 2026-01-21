@@ -4170,8 +4170,8 @@ with tab2:
                 expl = explain_row_contributions(
                     ds_fx_last, 
                     model, 
-                )
                     expl_df = expl.get("df") or expl.get("full")
+                )
                     if expl_df is None or len(expl_df) == 0:
                         st.warning("Explain details not available for symmetric table.")
                     else:
