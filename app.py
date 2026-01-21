@@ -4162,16 +4162,16 @@ with tab2:
         # En el teu flux manual, ds_fx existeix abans de _prep_X_for_model.
         
         try:
-                ds_fx_last = st.session_state.get("last_ds_fx")
-                if ds_fx_last is None:
-                    st.warning("Explain not available: missing stored feature row (last_ds_fx). Run a prediction again.")
-                    expl = {"ok": False, "error": "missing last_ds_fx"}
-                else:
-                    expl = explain_row_contributions(ds_fx_last, model, cal, feature_names, iso=iso, top_k=10)
+            ds_fx_last = st.session_state.get("last_ds_fx")
+            if ds_fx_last is None:
+                st.warning("Explain not available: missing stored feature row (last_ds_fx). Run a prediction again.")
+                expl = {"ok": False, "error": "missing last_ds_fx"}
+            else:
+                expl = explain_row_contributions(ds_fx_last, model, cal, feature_names, iso=iso, top_k=10)
 
-                if expl.get("ok"):
-                    st.caption(expl.get("note",""))
-        
+            if expl.get("ok"):
+                st.caption(expl.get("note", ""))
+
                 show_sym = st.toggle("Show symmetric A vs B table", value=True)
 
                 if show_sym:
@@ -4182,27 +4182,34 @@ with tab2:
                         ],
                         ignore_index=True,
                     )
-                    
-                    sym = build_symmetric_ab_table(expl_df, top_k=12)
 
+                    sym = build_symmetric_ab_table(expl_df, top_k=12)
                     st.markdown("**Symmetric factors (A vs B)**")
                     st.dataframe(sym, use_container_width=True)
+
                 else:
                     c1, c2 = st.columns(2)
                     with c1:
                         st.markdown("**Top factors pushing Player A up**")
-                        st.dataframe(expl["top_pos"][["feature","value","contrib_logodds"]], use_container_width=True)
+                        st.dataframe(
+                            expl["top_pos"][["feature", "value", "contrib_logodds"]],
+                            use_container_width=True
+                        )
                     with c2:
                         st.markdown("**Top factors pushing Player A down**")
-                        st.dataframe(expl["top_neg"][["feature","value","contrib_logodds"]], use_container_width=True)
+                        st.dataframe(
+                            expl["top_neg"][["feature", "value", "contrib_logodds"]],
+                            use_container_width=True
+                        )
 
-        
-                    st.markdown(
-                        f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
-                        f"**Calibrated prob (displayed):** {expl['p_cal']*100:.1f}%"
-                    )
-                    else:
-                st.warning(f"Explain not available: {expl.get('error','unknown error')}")
+                st.markdown(
+                    f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
+                    f"**Calibrated prob (displayed):** {expl['p_cal']*100:.1f}%"
+                )
+
+            else:
+                st.warning(f"Explain not available: {expl.get('error', 'unknown error')}")
+
         except Exception as e:
             st.warning(f"Explain error: {type(e).__name__}: {e}")
 
