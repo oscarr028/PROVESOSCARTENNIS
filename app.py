@@ -4170,7 +4170,7 @@ with tab2:
             )
             if expl.get("ok"):
                 st.caption(expl.get("note",""))
-                """
+                
                 c1, c2 = st.columns(2)
                 with c1:
                     st.markdown("**Top factors pushing Player A up**")
@@ -4178,21 +4178,9 @@ with tab2:
                 with c2:
                     st.markdown("**Top factors pushing Player A down**")
                     st.dataframe(expl["top_neg"][["feature","value","contrib_logodds"]], use_container_width=True)
-                """
+                
                 show_sym = st.toggle("Show symmetric A vs B table", value=True)
 
-if show_sym:
-    sym = build_symmetric_ab_table(expl["df"], top_k=12)
-    st.markdown("**Symmetric factors (A vs B)**")
-    st.dataframe(sym, use_container_width=True)
-else:
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("**Top factors pushing Player A up**")
-        st.dataframe(expl["top_pos"][["feature","value","contrib_logodds"]], use_container_width=True)
-    with c2:
-        st.markdown("**Top factors pushing Player A down**")
-        st.dataframe(expl["top_neg"][["feature","value","contrib_logodds"]], use_container_width=True)
 
                 st.markdown(
                     f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
