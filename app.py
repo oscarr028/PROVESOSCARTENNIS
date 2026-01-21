@@ -3477,6 +3477,7 @@ with tab2:
             "top_all": top,
             "top_pos": top_pos,
             "top_neg": top_neg,
+            "df": dfc,
             "full": dfc,
             "note": "Contribucions en log-odds del model base. La probabilitat mostrada pot ser calibrada (isotonic)."
         }
@@ -4121,6 +4122,7 @@ with tab2:
                     out.loc[0, "date"] = _canonicalize_date(out.loc[0, "date"], mid)
 
                     st.session_state["last_manual_tip"] = out.copy()
+                    st.session_state["last_ds_fx"] = ds_fx.copy()
                     st.session_state["last_model_name"] = getattr(model, "__name__", getattr(model, "__class__", type("x", (object,), {})).__name__)
                     st.success("Predicció preparada. Revisa el preview i usa els botons d'enviament de sota.")
 
@@ -4160,14 +4162,13 @@ with tab2:
         # En el teu flux manual, ds_fx existeix abans de _prep_X_for_model.
         
         try:
-            expl = explain_row_contributions(
-                ds_row=ds_fx,               # <- 1 fila del dataset_enh/dataset_final pel match
-                model=model,
-                scaler=scaler,
-                model_cols=train_cols,      # <- model_columns.txt (ordre exacte)
-                iso=iso,
-                top_k=10
-            )
+            ds_fx_last = st.session_state.get("last_ds_fx")
+                if ds_fx_last is None:
+                    st.warning("Explain not available: missing stored feature row (last_ds_fx). Run a prediction again.")
+                    expl = {"ok": False, "error": "missing last_ds_fx"}
+                else:
+                    expl = explain_row_contributions(ds_fx_last, model, cal, feature_names, iso=iso, top_k=10)
+
             if expl.get("ok"):
                 st.caption(expl.get("note",""))
         
