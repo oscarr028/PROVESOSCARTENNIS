@@ -4169,7 +4169,7 @@ with tab2:
                 else:
                     expl = explain_row_contributions(ds_fx_last, model, cal, feature_names, iso=iso, top_k=10)
 
-            if expl.get("ok"):
+                if expl.get("ok"):
                 st.caption(expl.get("note",""))
         
                 show_sym = st.toggle("Show symmetric A vs B table", value=True)
