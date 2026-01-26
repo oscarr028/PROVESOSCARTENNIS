@@ -3382,6 +3382,7 @@ with tab2:
     
     def _sigmoid(z: float) -> float:
         return float(1.0 / (1.0 + np.exp(-z)))
+    
     def build_abdiff_table_for_match(mid: str,
                                  matches_enr: pd.DataFrame,
                                  feats_player_pre: pd.DataFrame,
