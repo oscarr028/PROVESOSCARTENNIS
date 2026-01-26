@@ -4206,7 +4206,29 @@ with tab2:
                 with c2:
                     st.markdown("**Top factors pushing Player A down**")
                     st.dataframe(expl["top_neg"][["feature","value","contrib_logodds"]], use_container_width=True)
-        
+                
+                # --- NUEVO: tabla A / B / diff para entender mejor ---
+                show_ab = st.checkbox("Mostrar tabla A/B/diff de las variables", value=True)
+                
+                if show_ab:
+                    # Si quieres solo las variables que salen en la explicación (top_pos+top_neg):
+                    top_feats = list(expl["top_pos"]["feature"]) + list(expl["top_neg"]["feature"])
+                    # nos quedamos con las que son *_diff y les quitamos el sufijo
+                    only_vars = sorted({f[:-5] for f in top_feats if isinstance(f, str) and f.endswith("_diff")})
+                
+                    abdf = build_abdiff_table_for_match(
+                        mid=mid,
+                        matches_enr=merged_enr,          # <- en tu flujo se llama merged_enr
+                        feats_player_pre=feats_player_pre,
+                        only_vars=only_vars              # <- tabla compacta solo de las relevantes
+                    )
+                
+                    st.markdown("**Valores por jugador (A/B) y diferencia (A−B)**")
+                    if abdf.empty:
+                        st.info("No se han podido recuperar valores A/B para este match (falta feats_player_pre o filas del match).")
+                    else:
+                        st.dataframe(abdf, use_container_width=True, hide_index=True)
+
                 st.markdown(
                     f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
                     f"**Calibrated prob (displayed):** {expl['p_cal']*100:.1f}%"
