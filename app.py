@@ -4292,6 +4292,14 @@ with tab2:
                     # ✅ HISTÓRICO COMPLETO (no merged_enr)
                     base_matches_path = os.path.join(DATA_DIR, "matches.csv")
                     hist_df = pd.read_csv(base_matches_path)
+                    st.write("aid:", aid, "bid:", bid, "mdate:", mdate)
+
+                    cntA = ((hist_df["player_a_id"] == aid) | (hist_df["player_b_id"] == aid)).sum()
+                    cntB = ((hist_df["player_a_id"] == bid) | (hist_df["player_b_id"] == bid)).sum()
+                    
+                    st.write("Matches en CSV de A:", int(cntA))
+                    st.write("Matches en CSV de B:", int(cntB))
+
                     hist_df = _enrich_dom(hist_df)
                 
                     colA, colB = st.columns(2)
