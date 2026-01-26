@@ -3384,67 +3384,66 @@ with tab2:
         return float(1.0 / (1.0 + np.exp(-z)))
     
     def build_abdiff_table_for_match(mid: str,
-                                 matches_enr: pd.DataFrame,
-                                 feats_player_pre: pd.DataFrame,
-                                 only_vars: list | None = None) -> pd.DataFrame:
+                                     matches_enr: pd.DataFrame,
+                                     feats_player_pre: pd.DataFrame,
+                                     only_vars: list | None = None) -> pd.DataFrame:
         """
         Crea una tabla con variable base y columnas: A, B, diff.
         Se apoya en feats_player_pre (que tiene player_id + features pre).
         """
-    if feats_player_pre is None or feats_player_pre.empty:
-        return pd.DataFrame()
+        if feats_player_pre is None or feats_player_pre.empty:
+            return pd.DataFrame()
+    
+        mrow = matches_enr[matches_enr["match_id"] == mid]
+        if mrow.empty:
+            return pd.DataFrame()
+    
+        mrow = mrow.iloc[0]
+        aid = str(mrow["player_a_id"])
+        bid = str(mrow["player_b_id"])
+    
+        fp = feats_player_pre.copy()
+        fp["match_id"] = fp["match_id"].astype(str)
+        fp["player_id"] = fp["player_id"].astype(str)
+    
+        arow = fp[(fp["match_id"] == str(mid)) & (fp["player_id"] == aid)]
+        brow = fp[(fp["match_id"] == str(mid)) & (fp["player_id"] == bid)]
+    
+        if arow.empty or brow.empty:
+            return pd.DataFrame()
+    
+        arow = arow.iloc[0]
+        brow = brow.iloc[0]
+    
+        base_cols = [
+            "elo_global_pre", "elo_surface_pre", "winrate10_pre", "winrate25_pre", "sos_elo_recent_pre",
+            "hold_pre", "break_pre", "serve_return_sum_pre", "rest_days_pre", "matches_14d_pre",
+            "aces_pg_pre", "dfs_pg_pre", "tb_winrate_pre", "first_in_pre", "first_pts_pre", "second_pts_pre"
+        ]
+    
+        if only_vars:
+            only_vars_set = set(only_vars)
+            base_cols = [c for c in base_cols if c in only_vars_set]
+    
+        rows = []
+        for c in base_cols:
+            if c not in fp.columns:
+                continue
+            A = arow.get(c, np.nan)
+            B = brow.get(c, np.nan)
+            try:
+                d = float(A) - float(B)
+            except Exception:
+                d = np.nan
+            rows.append({"variable": c, "A": A, "B": B, "diff": d})
+    
+        out = pd.DataFrame(rows)
+        if not out.empty:
+            for col in ["A", "B", "diff"]:
+                out[col] = pd.to_numeric(out[col], errors="coerce")
+    
+        return out
 
-    mrow = matches_enr[matches_enr["match_id"] == mid]
-    if mrow.empty:
-        return pd.DataFrame()
-
-    mrow = mrow.iloc[0]
-    aid = str(mrow["player_a_id"])
-    bid = str(mrow["player_b_id"])
-
-    fp = feats_player_pre.copy()
-    fp["match_id"] = fp["match_id"].astype(str)
-    fp["player_id"] = fp["player_id"].astype(str)
-
-    arow = fp[(fp["match_id"] == str(mid)) & (fp["player_id"] == aid)]
-    brow = fp[(fp["match_id"] == str(mid)) & (fp["player_id"] == bid)]
-
-    if arow.empty or brow.empty:
-        return pd.DataFrame()
-
-    arow = arow.iloc[0]
-    brow = brow.iloc[0]
-
-    # Variables numéricas base típicas del pipeline
-    base_cols = [
-        'elo_global_pre','elo_surface_pre','winrate10_pre','winrate25_pre','sos_elo_recent_pre',
-        'hold_pre','break_pre','serve_return_sum_pre','rest_days_pre','matches_14d_pre',
-        'aces_pg_pre','dfs_pg_pre','tb_winrate_pre','first_in_pre','first_pts_pre','second_pts_pre'
-    ]
-
-    # si pasas only_vars, nos quedamos solo con esas (y evitamos errores si alguna no existe)
-    if only_vars:
-        base_cols = [c for c in base_cols if c in set(only_vars)]
-
-    rows = []
-    for c in base_cols:
-        if c not in fp.columns:
-            continue
-        A = arow.get(c, np.nan)
-        B = brow.get(c, np.nan)
-        try:
-            d = float(A) - float(B)
-        except Exception:
-            d = np.nan
-        rows.append({"variable": c, "A": A, "B": B, "diff": d})
-
-    out = pd.DataFrame(rows)
-
-    # un poco de limpieza visual
-    if not out.empty:
-        for col in ["A", "B", "diff"]:
-            out[col] = pd.to_numeric(out[col], errors="coerce")
-    return out
 
     
     def explain_row_contributions(
