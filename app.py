@@ -3387,10 +3387,10 @@ with tab2:
                                  matches_enr: pd.DataFrame,
                                  feats_player_pre: pd.DataFrame,
                                  only_vars: list | None = None) -> pd.DataFrame:
-    """
-    Crea una tabla con variable base y columnas: A, B, diff.
-    Se apoya en feats_player_pre (que tiene player_id + features pre).
-    """
+        """
+        Crea una tabla con variable base y columnas: A, B, diff.
+        Se apoya en feats_player_pre (que tiene player_id + features pre).
+        """
     if feats_player_pre is None or feats_player_pre.empty:
         return pd.DataFrame()
 
