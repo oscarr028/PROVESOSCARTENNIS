@@ -3489,7 +3489,7 @@ with tab2:
     
         # Columnas bonitas (solo las que existan)
         cols = []
-        for c in ["match_date", "result", "opponent_id", "tourney_name", "round", "surface", "score"]:
+        for c in ["match_date", "result", "opponent_id", "tourney_name", "round", "city"]:
             if c in df.columns:
                 cols.append(c)
     
