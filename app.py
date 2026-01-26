@@ -4289,17 +4289,23 @@ with tab2:
                     bid = str(mrow["player_b_id"])
                     mdate = mrow["match_date"] if "match_date" in merged_enr.columns else None
                 
+                    # ✅ HISTÓRICO COMPLETO (no merged_enr)
+                    base_matches_path = os.path.join(DATA_DIR, "matches.csv")
+                    hist_df = pd.read_csv(base_matches_path)
+                    hist_df = _enrich_dom(hist_df)
+                
                     colA, colB = st.columns(2)
                 
                     with colA:
                         st.markdown("**Últimos 10 partidos - Jugador A**")
-                        histA = last_n_matches(aid, merged_enr, before_date=mdate, n=10)
+                        histA = last_n_matches(aid, hist_df, before_date=mdate, n=10)
                         st.dataframe(histA, use_container_width=True, hide_index=True)
                 
                     with colB:
                         st.markdown("**Últimos 10 partidos - Jugador B**")
-                        histB = last_n_matches(bid, merged_enr, before_date=mdate, n=10)
+                        histB = last_n_matches(bid, hist_df, before_date=mdate, n=10)
                         st.dataframe(histB, use_container_width=True, hide_index=True)
+
 
                 
                 st.markdown(
