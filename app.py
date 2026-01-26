@@ -3443,7 +3443,61 @@ with tab2:
                 out[col] = pd.to_numeric(out[col], errors="coerce")
     
         return out
-
+    
+    def last_n_matches(player_id: str,
+                       matches: pd.DataFrame,
+                       before_date=None,
+                       n: int = 10) -> pd.DataFrame:
+        """
+        Devuelve los últimos n partidos del jugador (player_id) antes de before_date.
+        Asume que matches tiene: match_date, player_a_id, player_b_id, winner_id (o winner), score (opcional), surface (opcional).
+        """
+        df = matches.copy()
+    
+        # Normaliza tipos
+        for c in ["player_a_id", "player_b_id"]:
+            if c in df.columns:
+                df[c] = df[c].astype(str)
+    
+        pid = str(player_id)
+    
+        # Filtra partidos donde juega
+        df = df[(df["player_a_id"] == pid) | (df["player_b_id"] == pid)].copy()
+    
+        # Fecha
+        if "match_date" in df.columns:
+            df["match_date"] = pd.to_datetime(df["match_date"], errors="coerce")
+            if before_date is not None:
+                before_date = pd.to_datetime(before_date)
+                df = df[df["match_date"] < before_date]
+    
+            df = df.sort_values("match_date", ascending=False)
+    
+        df = df.head(n)
+    
+        # Construye rival + resultado
+        df["opponent_id"] = np.where(df["player_a_id"] == pid, df["player_b_id"], df["player_a_id"])
+    
+        if "winner_id" in df.columns:
+            df["winner_id"] = df["winner_id"].astype(str)
+            df["result"] = np.where(df["winner_id"] == pid, "W", "L")
+        elif "winner" in df.columns:
+            df["winner"] = df["winner"].astype(str)
+            df["result"] = np.where(df["winner"] == pid, "W", "L")
+        else:
+            df["result"] = ""
+    
+        # Columnas bonitas (solo las que existan)
+        cols = []
+        for c in ["match_date", "result", "opponent_id", "tourney_name", "round", "surface", "score"]:
+            if c in df.columns:
+                cols.append(c)
+    
+        # fallback mínimo
+        if not cols:
+            cols = [c for c in ["match_date", "result", "opponent_id"] if c in df.columns]
+    
+        return df[cols].reset_index(drop=True)
 
     
     def explain_row_contributions(
@@ -4229,6 +4283,25 @@ with tab2:
                     else:
                         st.dataframe(abdf, use_container_width=True, hide_index=True)
 
+                with st.expander("Ver últimos 10 partidos de cada jugador", expanded=False):
+                    mrow = merged_enr[merged_enr["match_id"] == mid].iloc[0]
+                    aid = str(mrow["player_a_id"])
+                    bid = str(mrow["player_b_id"])
+                    mdate = mrow["match_date"] if "match_date" in merged_enr.columns else None
+                
+                    colA, colB = st.columns(2)
+                
+                    with colA:
+                        st.markdown("**Últimos 10 partidos - Jugador A**")
+                        histA = last_n_matches(aid, merged_enr, before_date=mdate, n=10)
+                        st.dataframe(histA, use_container_width=True, hide_index=True)
+                
+                    with colB:
+                        st.markdown("**Últimos 10 partidos - Jugador B**")
+                        histB = last_n_matches(bid, merged_enr, before_date=mdate, n=10)
+                        st.dataframe(histB, use_container_width=True, hide_index=True)
+
+                
                 st.markdown(
                     f"**Raw model prob (pre-calibration):** {expl['p_raw']*100:.1f}%  \n"
                     f"**Calibrated prob (displayed):** {expl['p_cal']*100:.1f}%"
