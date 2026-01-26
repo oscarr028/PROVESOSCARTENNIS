@@ -4300,18 +4300,20 @@ with tab2:
                     st.write("Matches en CSV de A:", int(cntA))
                     st.write("Matches en CSV de B:", int(cntB))
 
+                    mdate_use = None if pd.isna(mdate) else mdate
+                    
                     hist_df = _enrich_dom(hist_df)
                 
                     colA, colB = st.columns(2)
                 
                     with colA:
                         st.markdown("**Últimos 10 partidos - Jugador A**")
-                        histA = last_n_matches(aid, hist_df, before_date=mdate, n=10)
+                        histA = last_n_matches(aid, hist_df, before_date=mdate_use, n=10)
                         st.dataframe(histA, use_container_width=True, hide_index=True)
                 
                     with colB:
                         st.markdown("**Últimos 10 partidos - Jugador B**")
-                        histB = last_n_matches(bid, hist_df, before_date=mdate, n=10)
+                        histB = last_n_matches(bid, hist_df, before_date=mdate_use, n=10)
                         st.dataframe(histB, use_container_width=True, hide_index=True)
 
 
