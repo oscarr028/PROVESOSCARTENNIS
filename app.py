@@ -4219,7 +4219,7 @@ with tab2:
                     abdf = build_abdiff_table_for_match(
                         mid=mid,
                         matches_enr=merged_enr,          # <- en tu flujo se llama merged_enr
-                        feats_player_pre=feats_player_pre,
+                        feats_player_pre=feats,
                         only_vars=only_vars              # <- tabla compacta solo de las relevantes
                     )
                 
